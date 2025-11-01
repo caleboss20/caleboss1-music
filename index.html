@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+  <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React project</title>
+    <link rel="stylesheet" href="music.css">
+  </head>
+  <body>
+    <div class="js-container"></div>
+
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+   //practice//
+
+        function MusicPlayList(){
+            const [musicvalue,setmusicvalue]=React.useState(''); 
+            const [showoverlay,setShowoverlay]=React.useState(false);
+             const [circleoverlay,setCircleoverlay]=React.useState(false);
+
+            const [MusicPlay,setMusicPlay]=React.useState([
+                {
+                   id:1,
+                   image:'img1.jpg',
+                   title:'oh merciful Lord',
+                   artist:'Joe Mettle' 
+                },
+                {
+                    id:2,
+                    image:'img2.jpg',
+                   title:'Grateful to You Lord',
+                   artist:'Joyce Blessing'
+                },
+                {
+                    id:3,
+                    image:'img3.jpg',
+                   title:'Wonderful Saviour',
+                   artist:'Obaapa Christy'
+                },
+                {
+                     id:4,
+                   image:'img5.jpg',
+                   title:'oh merciful Lord',
+                   artist:'Joe Mettle' 
+                },
+                {
+                     id:5,
+                   image:'img6.jpg',
+                   title:'Great Are you Lord',
+                   artist:'Joe Mettle'
+                }
+             ])
+
+             const handleDelete=(i)=>{
+            const newList=[...MusicPlay];
+             newList.splice(i,1);
+             setMusicPlay(newList);
+             }
+            
+
+
+
+                const GetUserInput=(e)=>{
+                    setmusicvalue(e.target.value);
+                    setCircleoverlay(true);
+                   
+                    clearTimeout(window.loaderTimeout);
+                    window.loaderTimeout=setTimeout(()=>{
+                        setCircleoverlay(false);
+                    },2000)
+                }
+
+                const filterItems=musicvalue? 
+                MusicPlay.filter(music=>
+                music.title.toLowerCase().includes(musicvalue.toLowerCase())
+                 || music.artist.toLowerCase().includes(musicvalue.toLowerCase())
+                ):[]
+
+                
+
+                return(
+                    <>
+                    <Musify 
+                    
+                    GetUserInput={GetUserInput}
+                    musicvalue={musicvalue}
+                    filterItems={filterItems}
+                    showoverlay={showoverlay}
+                    setShowoverlay={setShowoverlay}
+                    circleoverlay={circleoverlay}
+                    setCircleoverlay={setCircleoverlay}
+                     handleDelete={handleDelete}
+                    
+                    />
+
+                    <BottomNavbar 
+                     showoverlay={showoverlay}
+                    setShowoverlay={setShowoverlay}
+                    />
+                    </>
+                    
+                
+                )
+             }
+
+    function Musify({GetUserInput,musicvalue,filterItems,showoverlay,setShowoverlay,circleoverlay,setCircleoverlay,handleDelete}){
+    return(
+    <div className="Music-player">
+        <nav>
+            <div className="profile-container"><img className="profile-img" /><span>C</span></div>
+            <strong>Search</strong>
+            
+            <svg width="35px" height="35px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+            </svg>
+
+        </nav>
+        
+        {showoverlay ? 
+            <div className="overlay-container">
+                <div className="overlay-input-section">
+                    <span className="back-arrow"onClick={()=>setShowoverlay(false)}>&larr;</span>
+                    <input
+                    onChange={GetUserInput}                
+                    placeholder="What do you want to listen to?"/>
+             </div>
+                        
+            <div>
+                <ul>
+                   <h2>
+              {GetUserInput ? 'Recents':null}</h2>   
+              {circleoverlay? <div className="loader"></div>:
+                musicvalue?filterItems.length >0?
+                
+            filterItems.map((item,i)=>(
+            <>
+           
+             <div key={item.id} className="music-Allresults">
+              <div className="music-result">
+                <img src={item.image} width="60px"height="60px" />
+                 <li>{item.title} ||  {item.artist}</li>
+
+                <svg width="35px"height="35px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                  <span className="music-close-btn"onClick={()=>handleDelete(i)}>&times;</span> 
+                </div>
+                </div>
+            </>
+             )
+            ):
+            <li>
+                <div className="error-container">
+                   <h2>Something went wrong.</h2>
+                   <small>Have another go?</small><br />
+                   <button>Try again</button>
+                </div>
+            </li>
+
+            :null}
+                 </ul>
+                 </div>
+
+                    </div> :null}
+                
+                
+                <input
+                onFocus={()=>setShowoverlay(true)}
+               
+                className="input-box"
+                value={musicvalue} 
+                placeholder="What do you want to listen to?"/>
+                <h2>Discover something new</h2>
+                <div className="top-suggestion">
+                   <div className="suggestion"><img src="m8.jpg" /><span className="top-suggest-text">#boombang</span></div>
+                    <div className="suggestion"><img src="m2.jpg" /><span className="top-suggest-text">#melody</span></div>
+                    <div className="suggestion"><img src="img4.jpg" /><span className="top-suggest-text">#dancemusic</span></div>
+                </div>
+                <h2>Browse all</h2>
+
+                 <div className="browse-suggestion">
+                    <div className="browse-suggest"><img src="img1.jpg" /><span className="suggest-text">Music</span></div>
+                    <div className="browse-suggest"><img src="m2.jpg" /><span className="suggest-text">Up-comi...</span></div>
+                    <div className="browse-suggest"><img src="m3.jpg" /><span className="suggest-text">Live Events</span></div>
+                    <div className="browse-suggest"><img src="m1.jpg" /><span className="suggest-text">Afro</span></div>
+                    <div className="browse-suggest"><img src="m5.jpg" /><span className="suggest-text">Mozarts</span></div>
+                    <div className="browse-suggest"><img src="m6.jpg" /><span className="suggest-text">Discover</span></div>
+                    <div className="browse-suggest"><img src="m7.jpg" /><span className="suggest-text">Music</span></div>
+                    <div className="browse-suggest"><img src="m8.jpg" /><span className="suggest-text">Up-comi...</span></div>
+                    <div className="browse-suggest"><img src="m9.jpg" /><span className="suggest-text">Live Events</span></div>
+                    <div className="browse-suggest"><img src="m10.jpg" /><span className="suggest-text">Afro</span></div>
+                    <div className="browse-suggest"><img src="m11.jpg" /><span className="suggest-text">Mozarts</span></div>
+                    <div className="browse-suggest"><img src="m12.jpg" /><span className="suggest-text">Discover</span></div>
+                    <div className="browse-suggest"><img src="img3.jpg" /><span className="suggest-text">Afro</span></div>
+                    <div className="browse-suggest"><img src="img5.jpg" /><span className="suggest-text">Mozarts</span></div>
+                    <div className="browse-suggest"><img src="img6.jpg" /><span className="suggest-text">Discover</span></div>         
+                   
+                </div>
+            </div>           
+                )
+             }
+
+
+             function MyMusicsplash(){
+                return(
+                    <>
+                    <div className="splash-container">
+                        <h1 className="splash-title">
+                            <span className="bounce">Caleb</span>
+                            <span className="electric">Music</span>
+                        </h1>
+                    </div>
+                   
+                    </>
+                )
+             }
+
+
+    function BottomNavbar({showoverlay,setShowoverlay}){
+        return(
+            <div className="bottom-navbar">
+                <div className="nav-link" onClick={()=>setShowoverlay(false)}>
+                <svg width="35px"height="35px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                    <strong>Home</strong>
+                </div>
+                
+                <div className="nav-link" onClick={()=>setShowoverlay(true)}>
+                    <svg width="35px"height="35px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <strong>Search</strong>
+                </div>
+
+                <div className="nav-link">
+                <svg width="35px"height="35px"  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                </svg>
+                    <strong>Your Library</strong>
+                </div>
+
+                <div className="nav-link">
+                    <svg width="35px"height="35px"  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
+                    </svg>
+                    <strong>Premium</strong>
+                </div>
+
+                <div className="nav-link">
+                    <svg width="35px"height="35px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                    <strong>Create</strong>
+                </div>
+            </div>
+        )
+        }
+
+            function App(){
+            const [splashScreen,setSplashScreen]=React.useState(true);
+            React.useEffect(()=>{
+             const timer=setTimeout(()=>{
+                setSplashScreen(false);
+             },1000)
+             return()=>clearTimeout(timer);
+            },[])
+
+           
+            return(
+                    <>
+                    {splashScreen? <MyMusicsplash />:<MusicPlayList />}
+                    
+                    </>
+                )
+                
+            }
+     
+      const container = document.querySelector('.js-container');
+      ReactDOM.createRoot(container).render(<App />);
+    </script>
+  </body>
+</html>
